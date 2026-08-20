@@ -18,7 +18,8 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          # 24, not 22: the app uses the built-in `node:sqlite` module.
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
