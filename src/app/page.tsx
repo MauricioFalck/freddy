@@ -1,36 +1,65 @@
-import { APP_STATUS } from "@/lib/status";
+import { getDb } from "@/lib/db/index.ts";
+import { requireUser } from "@/lib/auth/current-user.ts";
+import { listItems } from "@/lib/data/items.ts";
+import { logOutAction } from "./auth-actions.ts";
 
 /**
- * Placeholder home screen. FRE-2 only promises a reachable URL - the real
- * product UI arrives with the app shell and the first vertical slice.
+ * The signed-in home screen.
+ *
+ * Note the shape: `requireUser()` first, then every query takes `user.id`. The
+ * page is never handed a list it has to filter — it only ever receives rows the
+ * database already scoped to this user.
  */
-export default function Home() {
+
+// Session state is per-request. This page must never be cached or prerendered.
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const user = await requireUser();
+  const items = listItems(getDb(), user.id);
+
   return (
-    <main className="safe-top safe-bottom flex flex-1 flex-col justify-center gap-6 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <p className="text-muted text-sm font-medium tracking-widest uppercase">
-          Freddy Corp
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight">The foundation is up.</h1>
-        <p className="text-muted text-base">{APP_STATUS.tagline}</p>
-      </div>
-
-      <dl className="border-border bg-border grid grid-cols-1 gap-px overflow-hidden rounded-xl border text-sm">
-        {APP_STATUS.facts.map((fact) => (
-          <div
-            key={fact.label}
-            className="bg-surface flex items-baseline justify-between gap-4 px-4 py-3"
+    <main className="safe-top safe-bottom flex flex-1 flex-col px-6 py-6">
+      <header className="flex items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold tracking-tight">Your things</h1>
+          <p className="text-muted mt-1 truncate text-sm">{user.email}</p>
+        </div>
+        <form action={logOutAction}>
+          <button
+            type="submit"
+            className="border-border h-11 shrink-0 rounded-xl border px-3 text-sm font-medium"
           >
-            <dt className="text-muted">{fact.label}</dt>
-            <dd className="text-right font-medium">{fact.value}</dd>
-          </div>
-        ))}
-      </dl>
+            Log out
+          </button>
+        </form>
+      </header>
 
-      <p className="text-muted text-xs">
-        Next up: auth and per-user data isolation, then the first thing you can actually
-        manage.
-      </p>
+      <section className="mt-8 flex-1">
+        {items.length === 0 ? (
+          <div className="border-border rounded-2xl border border-dashed px-6 py-12 text-center">
+            <p className="text-base font-medium">Nothing here yet</p>
+            <p className="text-muted mt-2 text-sm">
+              This is your own private space. Once we know what you will be managing,
+              this is where it will live.
+            </p>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {items.map((item) => (
+              <li
+                key={item.id}
+                className="border-border bg-surface rounded-2xl border px-4 py-3"
+              >
+                <p className="font-medium">{item.title}</p>
+                {item.note ? (
+                  <p className="text-muted mt-1 text-sm">{item.note}</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }

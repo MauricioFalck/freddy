@@ -1,9 +1,14 @@
-name: Deploy
+name: Deploy (disabled)
 
-# Every merge to `main` publishes the static export to GitHub Pages.
+# This workflow published a static export to GitHub Pages. The app is no longer
+# a static export: auth needs a server and a database, so `next build` produces
+# a Node app that Pages cannot serve. See
+# docs/decisions/0002-auth-needs-a-server.md.
+#
+# The push trigger is removed rather than the workflow deleted, so that the
+# working Pages setup is still here to adapt once a host is chosen. Running it
+# by hand will fail until then.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
