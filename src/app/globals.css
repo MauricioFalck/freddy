@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/**
+ * Mobile-first design tokens.
+ *
+ * One neutral ramp plus a single accent. Light and dark are both first-class;
+ * dark follows the OS. Sizes assume a phone held one-handed: 44px minimum
+ * touch targets, generous line-height, no hover-only affordances.
+ */
+:root {
+  --background: #f7f7f8;
+  --surface: #ffffff;
+  --surface-muted: #f0f0f2;
+  --border: #e2e2e6;
+  --foreground: #16161a;
+  --muted: #6b6b76;
+  --accent: #3b5bdb;
+  --accent-contrast: #ffffff;
+  --danger: #c92a2a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0d0d10;
+    --surface: #17171c;
+    --surface-muted: #1f1f26;
+    --border: #2b2b33;
+    --foreground: #ececf1;
+    --muted: #9a9aa6;
+    --accent: #748ffc;
+    --accent-contrast: #0d0d10;
+    --danger: #ff8787;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-danger: var(--danger);
+}
+
+html {
+  /* Stop iOS Safari from zooming the page when a field takes focus. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  overscroll-behavior-y: none;
+}
+
+/* Inputs below 16px trigger focus zoom on iOS; keep the base at 16px. */
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+@utility safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@utility safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
